@@ -43,9 +43,9 @@ class ct_ifu_l0_btb_entry extends Module {
   gatedclk.io.module_en   := io.cp0_ifu_icg_en
   gatedclk.io.pad_yy_icg_scan_en := io.pad_yy_icg_scan_en
 
-  withClockAndReset(entry_clk, (~io.cpurst_b.asBool).asAsyncReset) {
+  withClockAndReset(entry_clk, (~io.cpurst_b).asAsyncReset) {
     // pack the tag, way_pred, target into a single register
-    val entry_data     = Reg(UInt(37.W))
+    val entry_data     = Wire(UInt(37.W))
     io.entry_tag      := entry_data(36, 22)
     io.entry_way_pred := entry_data(21, 20)
     io.entry_target   := entry_data(19, 0)
@@ -59,16 +59,20 @@ class ct_ifu_l0_btb_entry extends Module {
       io.entry_vld    -> io.entry_update_vld
     )
     // Reset
-    val entry_rst_value = Seq.fill(entry_signals.length)(0.U)
-    entry_signals.zip(entry_rst_value).foreach(x => x._1 := RegInit(x._2))
-
-    // update
-    when (io.entry_inv) {
-      entry_signals.zip(entry_rst_value).foreach(x => x._1 := x._2)
-    } .elsewhen (entry_update_en) {
-      entry_signals.zipWithIndex.foreach(x => {
-        x._1 := RegNext(Mux(io.entry_wen(x._2), update_signals_map(x._1), x._1))
-      })
+    val rst_signals_map = Map(
+      entry_data      -> 0.U,
+      io.entry_ras    -> false.B,
+      io.entry_cnt    -> false.B,
+      io.entry_vld    -> false.B
+    )
+    entry_signals.zipWithIndex.foreach { case (s, i) =>
+      val rst_signal = rst_signals_map(s)
+      val update_signal = update_signals_map(s)
+      val entry_signal = RegInit(rst_signal)
+      when (entry_update_en & io.entry_wen(i)) {
+        entry_signal := update_signal
+      }
+      s := entry_signal
     }
   }
 }
