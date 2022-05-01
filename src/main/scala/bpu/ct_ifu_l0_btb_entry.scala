@@ -6,10 +6,11 @@ import chisel3.experimental._
 import c910.common._
 
 class ct_ifu_l0_btb_entry_io extends Bundle {
-  val cp0_ifu_btb_en      = Input(Bool())
-  val cp0_ifu_icg_en      = Input(Bool())
-  val cp0_ifu_l0btb_en    = Input(Bool())
-  val cp0_yy_clk_en       = Input(Bool())
+  // val cp0_ifu_btb_en      = Input(Bool())
+  // val cp0_ifu_icg_en      = Input(Bool())
+  // val cp0_ifu_l0btb_en    = Input(Bool())
+  // val cp0_yy_clk_en       = Input(Bool())
+  val cp0                 = Input(new Cp0BtbCtrlBundle)
   val cpurst_b            = Input(Bool())
   val entry_inv           = Input(Bool())
   val entry_update        = Input(Bool())
@@ -34,13 +35,13 @@ class ct_ifu_l0_btb_entry extends Module {
   // Gated Clock
   val gatedclk = Module(new gated_clk_cell())
   val entry_clk = gatedclk.io.clk_out
-  val entry_update_en = io.entry_update & io.cp0_ifu_btb_en & io.cp0_ifu_l0btb_en
+  val entry_update_en = io.entry_update & io.cp0.ifu_btb_en & io.cp0.ifu_l0btb_en
   val entry_clk_en = entry_update_en
   gatedclk.io.clk_in      := io.forever_cpuclk
   gatedclk.io.external_en := false.B
-  gatedclk.io.global_en   := io.cp0_yy_clk_en
+  gatedclk.io.global_en   := io.cp0.yy_clk_en
   gatedclk.io.local_en    := entry_clk_en
-  gatedclk.io.module_en   := io.cp0_ifu_icg_en
+  gatedclk.io.module_en   := io.cp0.ifu_icg_en
   gatedclk.io.pad_yy_icg_scan_en := io.pad_yy_icg_scan_en
 
   withClockAndReset(entry_clk, (~io.cpurst_b).asAsyncReset) {

@@ -8,7 +8,7 @@ object l0btb extends App {
   (new chisel3.stage.ChiselStage).execute(
      Array("-X", "verilog"),
       Seq(
-          ChiselGeneratorAnnotation(() => new bpu.ct_ifu_l0_btb_entry),
+          ChiselGeneratorAnnotation(() => new bpu.ct_ifu_l0_btb),
           TargetDirAnnotation("./gen_rtl/")
       )
   )
