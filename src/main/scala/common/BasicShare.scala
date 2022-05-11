@@ -1,10 +1,10 @@
-package bpu
+package common
 
 import chisel3._
 import chisel3.util._
 import chisel3.experimental._
 //import c910.common._
-import common._
+import bpu._
 
 
 trait cp0_arry_io extends Bundle{

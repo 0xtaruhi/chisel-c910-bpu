@@ -1,5 +1,6 @@
 //package c910.bpu
-package  bpu
+//package  bpu
+package common
 import chisel3._
 import chisel3.util._
 import chisel3.experimental._
@@ -29,7 +30,7 @@ class ct_ifu_l0_btb_entry_io(val PC_WIDTH :Int=40,val ENTRY_SIZE :Int =16,val EN
   val entry_way_pred      = Output(UInt(2.W))
 }
 
-class ct_ifu_l0_btb_entry(val PC_WIDTH :Int=40,val ENTRY_SIZE :Int =16,val ENTRY_TARGET :Int =20) extends RawModule {
+class my_ct_ifu_l0_btb_entry(val PC_WIDTH :Int=40,val ENTRY_SIZE :Int =16,val ENTRY_TARGET :Int =20) extends RawModule {
   val io = IO(new ct_ifu_l0_btb_entry_io(PC_WIDTH=PC_WIDTH,ENTRY_SIZE=ENTRY_SIZE,ENTRY_TARGET = ENTRY_TARGET))
 
   // Gated Clock
